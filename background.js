@@ -91,7 +91,7 @@ function processDetails(details, characters, nameMap) {
     return result;
 }
 
-// Runs inside the blablalink.com page context — fetch calls use the page origin
+// Runs inside the blablalink.com page context - fetch calls use the page origin
 async function scrapeInPage(apiBase) {
     const headers = {
         "content-type": "application/json",
@@ -124,7 +124,7 @@ async function scrapeInPage(apiBase) {
     const roleData = await roleResp.json();
     const nikkeAreaId = parseInt(roleData.data?.role_info?.area_id ?? "82", 10);
 
-    // Retry GetUserCharacters — after cookie clearing, CheckLogin may still be in flight.
+    // Retry GetUserCharacters - after cookie clearing, CheckLogin may still be in flight.
     // "Inner token is invalid[3]" means cookies aren't ready yet; wait and try again.
     let chars;
     for (let attempt = 0; attempt < 6; attempt++) {
@@ -184,7 +184,7 @@ async function runFetch() {
             }),
         );
 
-        // Always open a fresh nikke-list tab — matches Node scraper behavior of always
+        // Always open a fresh nikke-list tab - matches Node scraper behavior of always
         // navigating fresh so the page fully initialises its game auth state before we call the API.
         setStatus("fetching", "Loading page...");
         const tab = await chrome.tabs.create({
@@ -210,7 +210,7 @@ async function runFetch() {
         // Poll until openid appears in localStorage (up to 15s), then wait an extra 5s
         // for the page's own CheckLogin request to complete and write fresh auth cookies.
         // Without the extra wait, openid is already present from the previous session and
-        // the poll exits immediately — before CheckLogin runs — causing "Inner token is invalid".
+        // the poll exits immediately - before CheckLogin runs - causing "Inner token is invalid".
         const deadline = Date.now() + 15000;
         let openidFound = false;
         while (Date.now() < deadline) {
@@ -243,7 +243,7 @@ async function runFetch() {
         if (pageResult.error === "not_logged_in") throw new Error("not_logged_in");
         if (pageResult.error) throw new Error(pageResult.error);
 
-        // Build name map — prefer live CDN data from page, fall back to bundled file
+        // Build name map - prefer live CDN data from page, fall back to bundled file
         setStatus("fetching", "Building name map...");
         let nameMap = {};
         if (pageResult.nameMapData) {
@@ -270,7 +270,7 @@ async function runFetch() {
         setStatus("fetching", "Sending to Gear Manager…");
         try {
             await sendToManager();
-            setStatus("done", `${count} nikkes — sent to Gear Manager`);
+            setStatus("done", `${count} nikkes - sent to Gear Manager`);
         } catch (_) {
             setStatus("done", `${count} nikkes loaded`);
         }
@@ -282,49 +282,56 @@ async function runFetch() {
 }
 
 const MANAGER_URLS = [
+    "http://localhost:3000",
     "http://localhost:8080",
+    "http://127.0.0.1:3000",
     "http://127.0.0.1:8080",
     "https://nikke-overload-gear-manager.web.app",
     "https://nikke-overload-gear-manager.firebaseapp.com",
 ];
 
+async function resolveManagerUrl() {
+    for (const url of MANAGER_URLS) {
+        try {
+            const resp = await fetch(`${url}/nikke-manager-ping.json`, { signal: AbortSignal.timeout(2000) });
+            if (!resp.ok) continue;
+            const json = await resp.json();
+            if (json?.app === "nikke-manager") return url;
+        } catch {}
+    }
+    return null;
+}
+
+function waitForTabComplete(tabId, timeout = 30000) {
+    return new Promise((resolve, reject) => {
+        const timer = setTimeout(() => reject(new Error("Tab load timed out")), timeout);
+        function listener(id, info) {
+            if (id === tabId && info.status === "complete") {
+                clearTimeout(timer);
+                chrome.tabs.onUpdated.removeListener(listener);
+                resolve();
+            }
+        }
+        chrome.tabs.onUpdated.addListener(listener);
+    });
+}
+
 async function sendToManager() {
     const { nikkeEquips } = await chrome.storage.local.get("nikkeEquips");
-    if (!nikkeEquips) throw new Error("No data — fetch first");
+    if (!nikkeEquips) throw new Error("No data - fetch first");
 
-    // Find an already-open Gear Manager tab, or open a new one
+    // Find an already-open Gear Manager tab, or open the first reachable URL
     const allTabs = await chrome.tabs.query({});
     let tab = allTabs.find((t) => t.url && MANAGER_URLS.some((u) => t.url.startsWith(u)));
 
     if (tab) {
         await chrome.tabs.update(tab.id, { active: true });
-        // If the tab is still loading, wait for it
-        if (tab.status !== "complete") {
-            await new Promise((resolve, reject) => {
-                const timer = setTimeout(() => reject(new Error("Tab load timed out")), 30000);
-                function listener(id, info) {
-                    if (id === tab.id && info.status === "complete") {
-                        clearTimeout(timer);
-                        chrome.tabs.onUpdated.removeListener(listener);
-                        resolve();
-                    }
-                }
-                chrome.tabs.onUpdated.addListener(listener);
-            });
-        }
+        if (tab.status !== "complete") await waitForTabComplete(tab.id);
     } else {
-        tab = await chrome.tabs.create({ url: MANAGER_URLS[0], active: true });
-        await new Promise((resolve, reject) => {
-            const timer = setTimeout(() => reject(new Error("Tab load timed out")), 30000);
-            function listener(id, info) {
-                if (id === tab.id && info.status === "complete") {
-                    clearTimeout(timer);
-                    chrome.tabs.onUpdated.removeListener(listener);
-                    resolve();
-                }
-            }
-            chrome.tabs.onUpdated.addListener(listener);
-        });
+        const url = await resolveManagerUrl();
+        if (!url) throw new Error("NIKKE Manager app not found - is it running?");
+        tab = await chrome.tabs.create({ url, active: true });
+        await waitForTabComplete(tab.id);
     }
 
     // Brief pause so page scripts finish initialising after DOM-complete
