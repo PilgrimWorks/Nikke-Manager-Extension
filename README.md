@@ -1,6 +1,6 @@
-# NIKKE Manager -- Browser Extension
+# NIKKE Manager Extension
 
-Fetches equipment substat data for all your NIKKE characters directly from Chrome.
+Fetches data for all your NIKKE characters directly from Chrome.
 No Node.js or command-line tools required.
 
 ## Installation
@@ -25,7 +25,7 @@ No Node.js or command-line tools required.
 3. Click **Fetch Data** and wait around 10 seconds
 4. Click **Download JSON** to save `nikke-equips.json`
 
-If you are not logged in, a login button will appear -- click it to open the login page,
+If you are not logged in, a login button will appear - click it to open the login page,
 log in, then click Fetch Data again.
 
 Your data is cached in the extension after each fetch, so Download JSON works any time
@@ -95,11 +95,3 @@ Each occupied line is `{ "stat": "<name>", "value": <number>, "display": "<perce
 Stat names used: `ATK`, `Element DMG`, `Hit Rate`, `Charge DMG`, `Charge Speed`, `Critical Rate`, `Critical DMG`, `Max Ammo`, `DEF`.
 
 Characters with no gear equipped are included with no slot keys.
-
-## Sharing with Others
-
-To share without requiring Load Unpacked:
-
-1. Create a developer account at the [Chrome Web Store](https://chrome.google.com/webstore/devconsole) (~$5 one-time fee)
-2. Zip the contents of this `extension` folder
-3. Upload and publish -- users can then install with one click

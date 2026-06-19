@@ -17,19 +17,19 @@
     "service_worker": "background.js"
   },
   "icons": {
-    "16": "icon_32.png",
-    "32": "icon_32.png",
-    "48": "icon_192.png",
-    "128": "icon_192.png"
+    "16": "icons/icon_32.png",
+    "32": "icons/icon_32.png",
+    "48": "icons/icon_192.png",
+    "128": "icons/icon_192.png"
   },
   "action": {
     "default_popup": "popup.html",
     "default_title": "NIKKE Manager",
     "default_icon": {
-      "16": "icon_32.png",
-      "32": "icon_32.png",
-      "48": "icon_192.png",
-      "128": "icon_192.png"
+      "16": "icons/icon_32.png",
+      "32": "icons/icon_32.png",
+      "48": "icons/icon_192.png",
+      "128": "icons/icon_192.png"
     }
   }
 }
