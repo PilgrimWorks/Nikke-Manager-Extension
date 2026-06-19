@@ -39,23 +39,62 @@ without re-fetching.
 {
   "16": {
     "name": "Rapi: Red Hood",
-    "Helmet": [
-      { "stat": "ATK", "value": 1.96, "display": "1.96%" },
-      null,
-      { "stat": "Critical Rate", "value": 1.36, "display": "1.36%" }
-    ],
-    "Chest": [ ... ],
-    "Gloves": [ ... ],
-    "Combat Boots": [ ... ]
+    "level": 160,
+    "power": 123456,
+    "bond": 40,
+    "cores": 7,
+    "limitBreak": 3,
+    "skill1": 10,
+    "skill2": 10,
+    "ultiSkill": 10,
+    "cube": { "tid": 1001, "lv": 15 },
+    "doll": { "tid": 2001, "lv": 5 },
+    "Helmet": {
+      "lv": 5,
+      "tier": 2,
+      "lines": [
+        { "stat": "ATK", "value": 1.96, "display": "1.96%" },
+        null,
+        { "stat": "Critical Rate", "value": 1.36, "display": "1.36%" }
+      ]
+    },
+    "Chest": { ... },
+    "Gloves": { ... },
+    "Combat Boots": { ... }
   },
   ...
 }
 ```
 
-- Each character is keyed by their unique ID, with `name` as a field inside
-- Equipment slots are `Helmet`, `Chest`, `Gloves`, and `Combat Boots`
-- Each slot has 3 lines -- unoccupied lines are `null`
-- Characters with no equipment equipped are included with no slot entries
+**Top-level fields per character:**
+
+| Field        | Type           | Description                                                  |
+| ------------ | -------------- | ------------------------------------------------------------ |
+| `name`       | string         | Character name                                               |
+| `level`      | number         | Character level                                              |
+| `power`      | number         | Combat power (CP)                                            |
+| `bond`       | number         | Bond / affection level                                       |
+| `cores`      | number         | Core count                                                   |
+| `limitBreak` | number         | Number of limit breaks applied (`grade` in API)              |
+| `skill1`     | number         | Skill 1 level                                                |
+| `skill2`     | number         | Skill 2 level                                                |
+| `ultiSkill`  | number         | Ultimate skill level                                         |
+| `cube`       | object \| null | Equipped Harmony Cube — `{ tid, lv }` — or `null` if none    |
+| `doll`       | object \| null | Equipped Collection Doll — `{ tid, lv }` — or `null` if none |
+
+**Gear slot fields** (`Helmet`, `Chest`, `Gloves`, `Combat Boots`):
+
+| Field   | Type     | Description                                    |
+| ------- | -------- | ---------------------------------------------- |
+| `lv`    | number   | Gear piece upgrade level                       |
+| `tier`  | number   | Gear piece tier                                |
+| `lines` | array[3] | Three stat lines — unoccupied lines are `null` |
+
+Each occupied line is `{ "stat": "<name>", "value": <number>, "display": "<percent>" }`.
+
+Stat names used: `ATK`, `Element DMG`, `Hit Rate`, `Charge DMG`, `Charge Speed`, `Critical Rate`, `Critical DMG`, `Max Ammo`, `DEF`.
+
+Characters with no gear equipped are included with no slot keys.
 
 ## Sharing with Others
 
