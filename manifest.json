@@ -1,0 +1,35 @@
+{
+  "manifest_version": 3,
+  "name": "NIKKE Manager",
+  "version": "1.0.0",
+  "description": "Fetches equipment substat data for all your NIKKE characters.",
+  "permissions": ["storage", "scripting", "tabs", "cookies"],
+  "host_permissions": [
+    "https://www.blablalink.com/*",
+    "https://api.blablalink.com/*",
+    "https://sg-tools-cdn.blablalink.com/*",
+    "https://nikke-overload-gear-manager.web.app/*",
+    "https://nikke-overload-gear-manager.firebaseapp.com/*",
+    "http://localhost/*",
+    "http://127.0.0.1/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "icons": {
+    "16": "icon_32.png",
+    "32": "icon_32.png",
+    "48": "icon_192.png",
+    "128": "icon_192.png"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "NIKKE Manager",
+    "default_icon": {
+      "16": "icon_32.png",
+      "32": "icon_32.png",
+      "48": "icon_192.png",
+      "128": "icon_192.png"
+    }
+  }
+}
