@@ -1,97 +1,68 @@
 # Nikke Manager Extension
 
-Fetches data for all your NIKKE characters directly from Chrome.
-No Node.js or command-line tools required.
+A Chrome extension that fetches equipment and character data for all your NIKKE characters directly from [blablalink.com](https://www.blablalink.com) and imports it straight into the [Nikke Manager](https://github.com/PilgrimWorks/Nikke-Manager) app — no manual data entry needed.
 
-## Installation
+**Main app repo:** [github.com/PilgrimWorks/Nikke-Manager](https://github.com/PilgrimWorks/Nikke-Manager)  
+**Live app:** https://pilgrimworks.github.io/Nikke-Manager
 
-1. Open Chrome and go to `chrome://extensions`
-2. Enable **Developer mode** (toggle in the top-right corner)
-3. Click **Load unpacked** and select this `extension` folder
-4. The Nikke Manager icon will appear in your toolbar
-
-> Chrome may show a warning about developer mode extensions on startup -- this is normal
-> for extensions loaded this way. Click "Cancel" to dismiss it.
+---
 
 ## Requirements
 
 - A [blablalink.com](https://www.blablalink.com) account linked to your NIKKE game
-- Must be logged in to blablalink.com in Chrome
+- Google Chrome (or any Chromium-based browser)
+
+## Installation
+
+1. Download or clone this repository
+2. Open Chrome and go to `chrome://extensions`
+3. Enable **Developer mode** (toggle in the top-right corner)
+4. Click **Load unpacked** and select this folder
+5. The Nikke Manager icon will appear in your toolbar
+
+> Chrome may show a warning about developer mode extensions on startup — click **Cancel** to dismiss it. This is normal for extensions loaded this way.
 
 ## Usage
 
-1. Log in to [blablalink.com](https://www.blablalink.com) in Chrome if you have not already
-2. Click the Nikke Manager icon in your toolbar
-3. Click **Fetch Data** and wait around 10 seconds
-4. Click **Download JSON** to save `nikke-equips.json`
+1. Log in to [blablalink.com](https://www.blablalink.com) in Chrome
+2. Click the **Nikke Manager** icon in your toolbar
+3. Click **Import Data** and wait around 10 seconds
+4. The extension automatically opens the Nikke Manager app and imports your data
 
-If you are not logged in, a login button will appear - click it to open the login page,
-log in, then click Fetch Data again.
+If you are not logged in, a login button will appear — click it to open the login page, log in, then click **Import Data** again.
 
-Your data is cached in the extension after each fetch, so Download JSON works any time
-without re-fetching.
+The popup also has a **Download Data** button to save your fetched data as a file. This is useful as a manual backup or for importing into the app via the **My Data** menu.
 
-## Output Format
+---
 
-`nikke-equips.json` is structured as:
+## What gets imported
 
-```json
-{
-  "16": {
-    "name": "Rapi: Red Hood",
-    "level": 160,
-    "power": 123456,
-    "bond": 40,
-    "cores": 7,
-    "limitBreak": 3,
-    "skill1": 10,
-    "skill2": 10,
-    "ultiSkill": 10,
-    "cube": { "tid": 1001, "lv": 15 },
-    "doll": { "tid": 2001, "lv": 5 },
-    "Helmet": {
-      "lv": 5,
-      "tier": 2,
-      "lines": [
-        { "stat": "ATK", "value": 1.96, "display": "1.96%" },
-        null,
-        { "stat": "Critical Rate", "value": 1.36, "display": "1.36%" }
-      ]
-    },
-    "Chest": { ... },
-    "Gloves": { ... },
-    "Combat Boots": { ... }
-  },
-  ...
-}
-```
+The extension fetches the following data for every character in your account:
 
-**Top-level fields per character:**
+**Character fields:**
 
-| Field        | Type           | Description                                                  |
-| ------------ | -------------- | ------------------------------------------------------------ |
-| `name`       | string         | Character name                                               |
-| `level`      | number         | Character level                                              |
-| `power`      | number         | Combat power (CP)                                            |
-| `bond`       | number         | Bond / affection level                                       |
-| `cores`      | number         | Core count                                                   |
-| `limitBreak` | number         | Number of limit breaks applied (`grade` in API)              |
-| `skill1`     | number         | Skill 1 level                                                |
-| `skill2`     | number         | Skill 2 level                                                |
-| `ultiSkill`  | number         | Ultimate skill level                                         |
-| `cube`       | object \| null | Equipped Harmony Cube — `{ tid, lv }` — or `null` if none    |
-| `doll`       | object \| null | Equipped Collection Doll — `{ tid, lv }` — or `null` if none |
+| Field        | Description                                      |
+| ------------ | ------------------------------------------------ |
+| `name`       | Character name                                   |
+| `level`      | Character level                                  |
+| `power`      | Combat power (CP)                                |
+| `bond`       | Bond / affection level                           |
+| `cores`      | Core count                                       |
+| `limitBreak` | Number of limit breaks applied                   |
+| `skill1`     | Skill 1 level                                    |
+| `skill2`     | Skill 2 level                                    |
+| `ultiSkill`  | Ultimate skill level                             |
+| `cube`       | Equipped Harmony Cube — `{ tid, lv }` or null    |
+| `doll`       | Equipped Collection Doll — `{ tid, lv }` or null |
 
-**Gear slot fields** (`Helmet`, `Chest`, `Gloves`, `Combat Boots`):
+**Gear slots** (`Helmet`, `Chest`, `Gloves`, `Combat Boots`):
 
-| Field   | Type     | Description                                    |
-| ------- | -------- | ---------------------------------------------- |
-| `lv`    | number   | Gear piece upgrade level                       |
-| `tier`  | number   | Gear piece tier                                |
-| `lines` | array[3] | Three stat lines — unoccupied lines are `null` |
+| Field   | Description                                    |
+| ------- | ---------------------------------------------- |
+| `lv`    | Gear piece upgrade level                       |
+| `tier`  | Gear piece tier                                |
+| `lines` | Three stat lines — unoccupied lines are `null` |
 
-Each occupied line is `{ "stat": "<name>", "value": <number>, "display": "<percent>" }`.
+Each occupied stat line is `{ "stat": "<name>", "value": <number>, "display": "<percent>" }`.
 
-Stat names used: `ATK`, `Element DMG`, `Hit Rate`, `Charge DMG`, `Charge Speed`, `Critical Rate`, `Critical DMG`, `Max Ammo`, `DEF`.
-
-Characters with no gear equipped are included with no slot keys.
+Stat names: `ATK`, `Elemental Dmg`, `Hit Rate`, `Charge Dmg`, `Charge Speed`, `Critical Rate`, `Critical Dmg`, `Max Ammo`, `DEF`.

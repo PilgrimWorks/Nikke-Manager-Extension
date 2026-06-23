@@ -8,12 +8,12 @@ const SLOTS = [
 ];
 
 const STAT_NAMES = {
-    IncElementDmg: "Element DMG",
+    IncElementDmg: "Elemental Dmg",
     StatAccuracyCircle: "Hit Rate",
     StatAtk: "ATK",
-    StatChargeDamage: "Charge DMG",
+    StatChargeDamage: "Charge Dmg",
     StatCritical: "Critical Rate",
-    StatCriticalDamage: "Critical DMG",
+    StatCriticalDamage: "Critical Dmg",
     StatChargeTime: "Charge Speed",
     StatAmmoLoad: "Max Ammo",
     StatDef: "DEF",
@@ -176,6 +176,9 @@ async function scrapeInPage(apiBase) {
 async function runFetch() {
     setStatus("fetching", "Starting...");
     let scrapeTabId = null;
+    let tabWasClosed = false;
+    let onScrapeTabRemoved = null;
+    let rejectDueToTabClose = null;
 
     try {
         // Clear stale game auth cookies (use url: to catch parent-domain .blablalink.com cookies too).
@@ -198,18 +201,28 @@ async function runFetch() {
         scrapeTabId = tab.id;
         const tabId = tab.id;
 
-        // Wait for DOM ready
+        onScrapeTabRemoved = (id) => {
+            if (id !== tabId) return;
+            tabWasClosed = true;
+            rejectDueToTabClose?.(new Error("tab_closed"));
+        };
+        chrome.tabs.onRemoved.addListener(onScrapeTabRemoved);
+
+        // Wait for DOM ready — reject immediately if the user closes the tab
         await new Promise((resolve, reject) => {
+            rejectDueToTabClose = reject;
             const timer = setTimeout(() => reject(new Error("Page load timed out")), 45000);
             function listener(id, info) {
                 if (id === tabId && info.status === "complete") {
                     clearTimeout(timer);
                     chrome.tabs.onUpdated.removeListener(listener);
+                    rejectDueToTabClose = null;
                     resolve();
                 }
             }
             chrome.tabs.onUpdated.addListener(listener);
         });
+        rejectDueToTabClose = null;
 
         // Poll until openid appears in localStorage (up to 15s), then wait an extra 5s
         // for the page's own CheckLogin request to complete and write fresh auth cookies.
@@ -279,8 +292,13 @@ async function runFetch() {
             setStatus("done", `${count} nikkes loaded`);
         }
     } catch (err) {
-        setStatus("error", err.message === "not_logged_in" ? "not_logged_in" : err.message);
+        if (tabWasClosed || err.message === "tab_closed") {
+            setStatus("error", "Import cancelled - blablalink tab was closed");
+        } else {
+            setStatus("error", err.message === "not_logged_in" ? "not_logged_in" : err.message);
+        }
     } finally {
+        if (onScrapeTabRemoved) chrome.tabs.onRemoved.removeListener(onScrapeTabRemoved);
         if (scrapeTabId) chrome.tabs.remove(scrapeTabId).catch(() => {});
     }
 }
@@ -290,8 +308,7 @@ const MANAGER_URLS = [
     "http://localhost:8080",
     "http://127.0.0.1:3000",
     "http://127.0.0.1:8080",
-    "https://nikke-overload-gear-manager.web.app",
-    "https://nikke-overload-gear-manager.firebaseapp.com",
+    "https://pilgrimworks.github.io/Nikke-Manager",
 ];
 
 async function resolveManagerUrl() {

@@ -1,70 +1,113 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-<head>
-  <meta charset="utf-8">
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      width: 280px;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      font-size: 13px;
-      color: #1a1a1a;
-      padding: 16px;
-      background: #fff;
-    }
-    h1 {
-      font-size: 14px;
-      font-weight: 600;
-      margin-bottom: 14px;
-    }
-    .status {
-      padding: 8px 10px;
-      border-radius: 6px;
-      margin-bottom: 12px;
-      font-size: 12px;
-      background: #f5f5f5;
-      color: #555;
-      min-height: 34px;
-      display: flex;
-      align-items: center;
-    }
-    .status.fetching { background: #e8f4fd; color: #1a73e8; }
-    .status.done     { background: #e8f5e9; color: #2e7d32; }
-    .status.error    { background: #fce8e8; color: #c62828; }
-    .btn {
-      display: block;
-      width: 100%;
-      padding: 8px 12px;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 13px;
-      font-weight: 500;
-      margin-bottom: 8px;
-    }
-    .btn:disabled { opacity: 0.45; cursor: not-allowed; }
-    .btn-primary { background: #1a73e8; color: #fff; }
-    .btn-primary:not(:disabled):hover { background: #1558b0; }
-    .btn-success { background: #2e7d32; color: #fff; }
-    .btn-success:not(:disabled):hover { background: #1b5e20; }
-    .btn-login   { background: #f57c00; color: #fff; }
-    .btn-login:hover { background: #e65100; }
-    #loginBtn { display: none; }
-    .meta { font-size: 11px; color: #999; margin-top: 4px; }
-    .gh-link { font-size: 11px; color: #999; text-decoration: none; }
-    .gh-link:hover { text-decoration: underline; }
-  </style>
-</head>
-<body>
-  <h1>Nikke Manager</h1>
-  <div id="status" class="status">Ready</div>
-  <button id="fetchBtn"    class="btn btn-primary">Import Data</button>
-  <button id="downloadBtn" class="btn btn-success" disabled>Download JSON</button>
-<button id="loginBtn"    class="btn btn-login">Log in to blablalink.com</button>
-  <div id="meta" class="meta"></div>
-  <div style="margin-top: 6px;">
-    <a href="https://github.com/Xehny/Nikke-Manager-Extension" target="_blank" class="gh-link">GitHub</a>
-  </div>
-  <script src="popup.js"></script>
-</body>
+    <head>
+        <meta charset="utf-8" />
+        <style>
+            * {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+            body {
+                width: 280px;
+                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+                font-size: 13px;
+                color: #1a1a1a;
+                padding: 16px;
+                background: #fff;
+            }
+            h1 {
+                font-size: 14px;
+                font-weight: 600;
+                margin-bottom: 14px;
+            }
+            .status {
+                padding: 8px 10px;
+                border-radius: 6px;
+                margin-bottom: 12px;
+                font-size: 12px;
+                background: #f5f5f5;
+                color: #555;
+                min-height: 34px;
+                display: flex;
+                align-items: center;
+            }
+            .status.fetching {
+                background: #e8f4fd;
+                color: #1a73e8;
+            }
+            .status.done {
+                background: #e8f5e9;
+                color: #2e7d32;
+            }
+            .status.error {
+                background: #fce8e8;
+                color: #c62828;
+            }
+            .btn {
+                display: block;
+                width: 100%;
+                padding: 8px 12px;
+                border: none;
+                border-radius: 6px;
+                cursor: pointer;
+                font-size: 13px;
+                font-weight: 500;
+                margin-bottom: 8px;
+            }
+            .btn:disabled {
+                opacity: 0.45;
+                cursor: not-allowed;
+            }
+            .btn-primary {
+                background: #1a73e8;
+                color: #fff;
+            }
+            .btn-primary:not(:disabled):hover {
+                background: #1558b0;
+            }
+            .btn-success {
+                background: #2e7d32;
+                color: #fff;
+            }
+            .btn-success:not(:disabled):hover {
+                background: #1b5e20;
+            }
+            .btn-login {
+                background: #f57c00;
+                color: #fff;
+            }
+            .btn-login:hover {
+                background: #e65100;
+            }
+            #loginBtn {
+                display: none;
+            }
+            .meta {
+                font-size: 11px;
+                color: #999;
+                margin-top: 4px;
+            }
+            .gh-link {
+                font-size: 11px;
+                color: #999;
+                text-decoration: none;
+            }
+            .gh-link:hover {
+                text-decoration: underline;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Nikke Manager</h1>
+        <div id="status" class="status">Ready</div>
+        <button id="fetchBtn" class="btn btn-primary">Import Data</button>
+        <button id="downloadBtn" class="btn btn-success" disabled>Download Data</button>
+        <button id="loginBtn" class="btn btn-login">Log in to blablalink.com</button>
+        <div id="meta" class="meta"></div>
+        <div style="margin-top: 6px">
+            <a href="https://github.com/PilgrimWorks/Nikke-Manager-Extension" target="_blank" class="gh-link">GitHub</a>
+        </div>
+        <script src="popup.js"></script>
+    </body>
 </html>
